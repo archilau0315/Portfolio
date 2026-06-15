@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<title>建筑设计作品集 | Architectural Portfolio</title>
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+html { font-size: 16px; height: 100%; overflow: hidden; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  background-color: #0a0a0a; color: #e8e8e8; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; height: 100%; width: 100%; position: fixed; top: 0; left: 0;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.title-xl { font-size: clamp(2.2rem, 7vw, 3.5rem); font-weight: 600; letter-spacing: 0.12em; line-height: 1.2; color: #f5f5f5; }
+.title-lg { font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 500; letter-spacing: 0.06em; line-height: 1.3; color: #f0f0f0; }
+.text-body { font-size: 0.95rem; font-weight: 300; line-height: 1.8; color: #aaaaaa; }
+.text-small { font-size: 0.75rem; font-weight: 400; letter-spacing: 0.08em; color: #666666; text-transform: uppercase; }
+.text-muted { font-size: 0.8rem; font-weight: 300; color: #555555; }
+.bold-lg { font-weight: 600; font-size: 1.05em; color: #e0e0e0; }
+
+/* ===== VIEWPORT ===== */
+.viewport {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth;
+}
+.viewport.hidden { overflow: hidden; }
+
+/* ===== LAYOUT ===== */
+.container { max-width: 480px; margin: 0 auto; padding: 0 24px; }
+.page { display: none; min-height: 100vh; }
+.page.active { display: block; animation: pageIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.page.leaving { animation: pageOut 0.3s cubic-bezier(0.55, 0, 1, 0.45) forwards; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes pageOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-20px) scale(0.98); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== HEADER ===== */
+.header { padding-top: 48px; padding-bottom: 40px; text-align: center; position: relative; }
+.header-title { margin-bottom: 8px; }
+.header-subtitle { font-size: 0.9rem; font-weight: 300; letter-spacing: 0.2em; color: #777777; text-transform: uppercase; }
+.header-line { width: 40px; height: 1px; background: #333333; margin: 24px auto 0; }
+
+/* ===== BRAND ===== */
+.brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 32px; opacity: 0.6; }
+.brand-logo { width: 28px; height: 28px; object-fit: contain; filter: brightness(1.5) grayscale(0.3); }
+.brand-name { font-size: 0.75rem; font-weight: 400; letter-spacing: 0.15em; color: #777777; }
+
+/* ===== LANGUAGE TOGGLE ===== */
+.lang-toggle {
+  position: fixed; top: 16px; right: 16px; z-index: 100;
+  background: rgba(30, 30, 30, 0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 24px; padding: 4px; display: flex; gap: 2px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+.lang-btn { border: none; background: none; color: #777; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.05em; padding: 8px 14px; border-radius: 20px; cursor: pointer; transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1); font-family: inherit; position: relative; }
+.lang-btn.active { background: rgba(255, 255, 255, 0.12); color: #f0f0f0; }
+
+/* ===== PROJECT LIST ===== */
+.project-list { padding-bottom: 40px; }
+.project-item {
+  display: flex; align-items: center; gap: 16px; padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04); cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1); position: relative; overflow: hidden;
+}
+.project-item::before {
+  content: ''; position: absolute; left: 0; bottom: 0; width: 0; height: 1px;
+  background: rgba(255, 255, 255, 0.2); transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.project-item:active { opacity: 0.5; transform: scale(0.98); }
+.project-item:active::before { width: 100%; }
+
+.project-thumb {
+  width: 72px; height: 72px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #111; position: relative;
+}
+.project-thumb img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease; opacity: 0;
+}
+.project-thumb img.loaded { opacity: 1; }
+.project-item:hover .project-thumb img { transform: scale(1.08); }
+
+.project-thumb-placeholder {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); background-size: 200% 200%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+.project-thumb img.loaded + .project-thumb-placeholder { display: none; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+.project-meta { flex: 1; min-width: 0; }
+.project-name { font-size: 1.1rem; font-weight: 300; color: #d0d0d0; letter-spacing: 0.04em; transition: color 0.3s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.project-item:hover .project-name { color: #f5f5f5; }
+.project-arrow { font-size: 1rem; color: #444444; transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease; flex-shrink: 0; }
+.project-item:hover .project-arrow { transform: translateX(6px); color: #888888; }
+
+/* ===== FOOTER ===== */
+.footer { padding: 48px 0 80px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.04); }
+.contact-section { margin-bottom: 24px; }
+.contact-label { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.2em; color: #444444; text-transform: uppercase; margin-bottom: 12px; }
+.contact-item { font-size: 0.8rem; font-weight: 300; color: #666666; letter-spacing: 0.03em; line-height: 2; }
+.contact-item a { color: #666666; text-decoration: none; transition: color 0.3s ease; }
+.contact-item a:hover { color: #999999; }
+.copyright { font-size: 0.65rem; color: #333333; letter-spacing: 0.1em; margin-top: 32px; }
+
+/* ===== DETAIL PAGE ===== */
+.detail-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+  padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.back-btn { display: inline-flex; align-items: center; gap: 8px; background: none; border: none; color: #888888; font-size: 0.9rem; font-weight: 300; letter-spacing: 0.05em; cursor: pointer; padding: 8px 0; font-family: inherit; transition: all 0.3s ease; }
+.back-btn:hover { color: #cccccc; transform: translateX(-2px); }
+.back-arrow { font-size: 1.2rem; line-height: 1; transition: transform 0.3s ease; }
+.back-btn:hover .back-arrow { transform: translateX(-3px); }
+
+.detail-content { padding-top: 0; padding-bottom: 64px; }
+
+/* Hero image */
+.hero-image {
+  position: relative; width: 100%; max-width: 480px; margin: 0 auto 24px; overflow: hidden; border-radius: 0 0 12px 12px;
+}
+.hero-image img { width: 100%; height: auto; display: block; transition: opacity 0.5s ease; opacity: 0; }
+.hero-image img.loaded { opacity: 1; }
+.hero-image-placeholder {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); background-size: 200% 200%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+.hero-image img.loaded + .hero-image-placeholder { display: none; }
+
+.detail-title-area { padding: 0 24px 24px; max-width: 480px; margin: 0 auto; }
+.detail-title { margin-bottom: 4px; }
+
+/* Info card */
+.info-card {
+  background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px;
+  padding: 24px; margin: 0 24px 40px; max-width: 432px; margin-left: auto; margin-right: auto; position: relative; overflow: hidden;
+}
+.info-card::before {
+  content: ''; position: absolute; top: 0; left: 24px; right: 24px; height: 1px; background: rgba(255, 255, 255, 0.1);
+}
+.info-card p, .info-card span { font-size: 0.88rem; line-height: 1.9; color: #999999; font-weight: 300; }
+
+/* ===== IMAGE GALLERY ===== */
+.gallery-item {
+  margin-bottom: 40px; animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; cursor: pointer;
+}
+.gallery-item:nth-child(1) { animation-delay: 0.05s; }
+.gallery-item:nth-child(2) { animation-delay: 0.1s; }
+.gallery-item:nth-child(3) { animation-delay: 0.15s; }
+.gallery-item:nth-child(4) { animation-delay: 0.2s; }
+.gallery-item:nth-child(5) { animation-delay: 0.25s; }
+.gallery-item:nth-child(6) { animation-delay: 0.3s; }
+.gallery-item:nth-child(7) { animation-delay: 0.35s; }
+.gallery-item:nth-child(8) { animation-delay: 0.4s; }
+.gallery-item:nth-child(9) { animation-delay: 0.45s; }
+.gallery-item:nth-child(10) { animation-delay: 0.5s; }
+.gallery-item:nth-child(11) { animation-delay: 0.55s; }
+.gallery-item:nth-child(12) { animation-delay: 0.6s; }
+.gallery-item:nth-child(13) { animation-delay: 0.65s; }
+.gallery-item:active { transform: scale(0.98); opacity: 0.7; }
+
+.gallery-image-wrapper {
+  position: relative; width: 100%; overflow: hidden; border-radius: 8px; background: #111111;
+}
+.gallery-image {
+  width: 100%; height: auto; display: block;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease; opacity: 0;
+}
+.gallery-image.loaded { opacity: 1; }
+.gallery-image-placeholder {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); background-size: 200% 200%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+.gallery-image.loaded + .gallery-image-placeholder { display: none; }
+
+/* Load failed fallback */
+.load-failed { background: #1a1a1a !important; }
+.load-failed .gallery-image-placeholder,
+.load-failed .hero-image-placeholder,
+.load-failed .project-thumb-placeholder { display: none !important; }
+.gallery-image-wrapper.load-failed .gallery-image,
+.hero-image.load-failed .hero-image-img,
+.project-thumb.load-failed img { opacity: 1 !important; }
+
+.gallery-caption { margin-top: 12px; padding: 0 4px; }
+.gallery-caption-text { font-size: 0.85rem; font-weight: 300; color: #888888; letter-spacing: 0.02em; }
+
+/* ===== VIDEO ===== */
+.video-section { margin-top: 32px; margin-bottom: 48px; padding: 0 24px; max-width: 480px; margin-left: auto; margin-right: auto; }
+.video-section-label { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.2em; color: #444444; text-transform: uppercase; margin-bottom: 16px; padding-left: 4px; }
+.video-item { margin-bottom: 32px; }
+.video-wrapper { position: relative; width: 100%; border-radius: 8px; overflow: hidden; background: #111111; }
+.video-wrapper video { width: 100%; display: block; }
+.video-caption { margin-top: 12px; padding: 0 4px; font-size: 0.85rem; font-weight: 300; color: #888888; }
+
+/* ===== LIGHTBOX ===== */
+.lightbox {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200;
+  background: #000000; display: none; opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1); touch-action: none;
+}
+.lightbox.active { display: flex; opacity: 1; }
+.lightbox-closing { opacity: 0 !important; }
+
+.lightbox-viewport {
+  position: relative; width: 100%; height: 100%; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.lightbox-track {
+  display: flex; height: 100%;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform;
+}
+.lightbox-slide {
+  width: 100vw; height: 100vh; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.lightbox-slide img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; user-select: none; -webkit-user-drag: none; }
+.lightbox-slide video { max-width: 100%; max-height: 100%; display: block; }
+
+.lightbox-close {
+  position: absolute; top: 16px; right: 16px; z-index: 210;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(40, 40, 40, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; font-size: 1.4rem;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: all 0.3s ease; opacity: 0.8;
+}
+.lightbox-close:hover { opacity: 1; background: rgba(60, 60, 60, 0.9); transform: scale(1.05); }
+.lightbox-close:active { transform: scale(0.95); }
+
+.lightbox-counter {
+  position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 210;
+  font-size: 0.75rem; font-weight: 400; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.6);
+  background: rgba(40, 40, 40, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  padding: 6px 16px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.lightbox-caption {
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 210;
+  font-size: 0.85rem; font-weight: 300; color: rgba(255, 255, 255, 0.7); text-align: center; max-width: 80%;
+  background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.06); pointer-events: none;
+}
+.lightbox-nav {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 210;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(40, 40, 40, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: all 0.3s ease; opacity: 0; user-select: none;
+}
+.lightbox.active .lightbox-nav { opacity: 1; }
+.lightbox-nav:hover { background: rgba(60, 60, 60, 0.8); color: #fff; }
+.lightbox-nav:active { transform: translateY(-50%) scale(0.95); }
+.lightbox-prev { left: 12px; }
+.lightbox-next { right: 12px; }
+
+.swipe-hint {
+  position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); z-index: 210;
+  font-size: 0.65rem; color: rgba(255, 255, 255, 0.3); letter-spacing: 0.1em; pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.lightbox.active .swipe-hint { animation: hintFade 2.5s ease forwards; }
+@keyframes hintFade { 0% { opacity: 1; } 60% { opacity: 1; } 100% { opacity: 0; } }
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #222222; border-radius: 2px; }
+::selection { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+
+@media (max-width: 360px) {
+  .container { padding: 0 20px; }
+  .header { padding-top: 40px; padding-bottom: 32px; }
+  .project-item { padding: 14px 0; }
+  .project-thumb { width: 60px; height: 60px; }
+  .project-name { font-size: 1rem; }
+  .info-card { margin: 0 20px 40px; padding: 20px; }
+  .gallery-item { margin-bottom: 32px; }
+  .detail-title-area { padding: 0 20px 20px; }
+  .video-section { padding: 0 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="viewport" id="viewport">
+
+<!-- Language Toggle -->
+<div class="lang-toggle">
+  <button class="lang-btn active" onclick="setLang('zh')" data-lang="zh" id="btn-zh">CN</button>
+  <button class="lang-btn" onclick="setLang('en')" data-lang="en" id="btn-en">EN</button>
+</div>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="container">
+    <header class="header">
+      <h1 class="title-xl header-title" data-i18n="title">建筑设计作品集</h1>
+      <p class="header-subtitle" data-i18n="subtitle">Architectural Design Portfolio</p>
+      <div class="header-line"></div>
+      <div class="brand">
+        <img src="Com_Logo.png" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+        <span class="brand-name" data-i18n="company">匡形无界</span>
+      </div>
+    </header>
+    <main class="project-list" id="project-list"></main>
+    <footer class="footer">
+      <div class="contact-section">
+        <p class="contact-label" data-i18n="contact">联系方式</p>
+        <p class="contact-item">
+          <span data-i18n="tel">TEL</span>：13512848962 刘珂<br>
+          <span data-i18n="email">E-mail</span>：<a href="mailto:kbit_ai@126.com">kbit_ai@126.com</a>
+        </p>
+      </div>
+      <p class="copyright" data-i18n="copyright">© 匡形无界设计</p>
+    </footer>
+  </div>
+</div>
+
+<!-- DETAIL PAGE -->
+<div class="page" id="page-detail">
+  <div class="detail-header">
+    <div class="container">
+      <button class="back-btn" onclick="goBack()">
+        <span class="back-arrow">←</span>
+        <span data-i18n="back">返回</span>
+      </button>
+    </div>
+  </div>
+  <div class="detail-content" id="detail-content"></div>
+</div>
+
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-viewport" id="lightbox-viewport"><div class="lightbox-track" id="lightbox-track"></div></div>
+  <div class="lightbox-counter" id="lightbox-counter">1 / 1</div>
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+  <div class="lightbox-close" id="lightbox-close" onclick="closeLightbox()">×</div>
+  <div class="lightbox-nav lightbox-prev" id="lightbox-prev" onclick="lightboxPrev()">‹</div>
+  <div class="lightbox-nav lightbox-next" id="lightbox-next" onclick="lightboxNext()">›</div>
+  <div class="swipe-hint" id="swipe-hint">Swipe to browse</div>
+</div>
+
+<script>
+const PROJECTS = [{"number": "006", "name": "呼市智慧能源文化中心方案", "folder": "006-呼市智慧能源文化中心方案", "info": "**项目简介：**项目位于内蒙古呼和浩特市，场地原为220KV室外变电站，本设计将原室外设施全部移到室内，并在先有基地上建设电力博物馆，面向公众市民开放。\n设计灵感来源南北朝民歌“敕勒川，......敕勒川,阴山下，风吹草低见牛羊.....\"的草原景象。建筑基地逐步隆起形成高台 ，上面是卵型博物馆，如“白云”般悬浮，呼应远处的山形地势。体现建筑与当地自然环境和历史的对话。\n**时间：**2026\n**主创建筑师：**吴旭\n**主创团队：**孟育新，刘珂，陈宗普", "images": [{"src": "projects/006-呼市智慧能源文化中心方案/images/01-总平面图.png", "name": "总平面图", "number": "01", "name_en": "Site Plan"}, {"src": "projects/006-呼市智慧能源文化中心方案/images/02-鸟瞰图.jpg", "name": "鸟瞰图", "number": "02", "name_en": "Aerial View"}, {"src": "projects/006-呼市智慧能源文化中心方案/images/03-从配电楼屋面看向展览馆视角.png", "name": "从配电楼屋面看向展览馆视角", "number": "03", "name_en": "View from Distribution Building Roof to Exhibition Hall"}, {"src": "projects/006-呼市智慧能源文化中心方案/images/04-东侧广场视角.png", "name": "东侧广场视角", "number": "04", "name_en": "East Plaza View"}, {"src": "projects/006-呼市智慧能源文化中心方案/images/05-休闲广场.png", "name": "休闲广场", "number": "05", "name_en": "Leisure Plaza"}, {"src": "projects/006-呼市智慧能源文化中心方案/images/06-配电楼局部.png", "name": "配电楼局部", "number": "06", "name_en": "Distribution Building Detail"}, {"src": "projects/006-呼市智慧能源文化中心方案/images/07-东北角下陈广场入口.png", "name": "东北角下陈广场入口", "number": "07", "name_en": "Northeast Corner Plaza Entrance"}], "videos": [{"src": "projects/006-呼市智慧能源文化中心方案/videos/视频01.mp4", "name": "视频01.mp4", "name_en": "Video 01"}, {"src": "projects/006-呼市智慧能源文化中心方案/videos/视频02.mp4", "name": "视频02.mp4", "name_en": "Video 02"}], "coverIndex": 1, "name_en": "Hohhot Smart Energy Cultural Center", "info_en": "**Project Overview:** Located in Hohhot, Inner Mongolia, this project transforms a former 220KV outdoor substation into an indoor facility, adding a public Power Museum on the existing site.\n\nInspired by the Northern Dynasties folk song \"Chilechuan\" — depicting the grassland scenery of \"wind blowing grass low to reveal cattle and sheep\" — the building base gradually rises to form a high platform. Upon it, an egg-shaped museum floats like a \"white cloud,\" echoing the distant mountain terrain and establishing a dialogue between architecture and the local natural environment and history.\n\n**Year:** 2026\n**Lead Architect:** Wu Xu\n**Design Team:** Meng Yuxin, Liu Ke, Chen Zongpu", "images_en": ["Site Plan", "Aerial View", "View from Distribution Building Roof to Exhibition Hall", "East Plaza View", "Leisure Plaza", "Distribution Building Detail", "Northeast Corner Plaza Entrance"], "videos_en": ["Video 01", "Video 02"], "info_html": "<span class=\"bold-lg\">项目简介：</span>项目位于内蒙古呼和浩特市，场地原为220KV室外变电站，本设计将原室外设施全部移到室内，并在先有基地上建设电力博物馆，面向公众市民开放。<br>设计灵感来源南北朝民歌“敕勒川，......敕勒川,阴山下，风吹草低见牛羊.....&quot;的草原景象。建筑基地逐步隆起形成高台 ，上面是卵型博物馆，如“白云”般悬浮，呼应远处的山形地势。体现建筑与当地自然环境和历史的对话。<br><span class=\"bold-lg\">时间：</span>2026<br><span class=\"bold-lg\">主创建筑师：</span>吴旭<br><span class=\"bold-lg\">主创团队：</span>孟育新，刘珂，陈宗普", "info_html_en": "<span class=\"bold-lg\">Project Overview:</span> Located in Hohhot, Inner Mongolia, this project transforms a former 220KV outdoor substation into an indoor facility, adding a public Power Museum on the existing site.<br><br>Inspired by the Northern Dynasties folk song &quot;Chilechuan&quot; — depicting the grassland scenery of &quot;wind blowing grass low to reveal cattle and sheep&quot; — the building base gradually rises to form a high platform. Upon it, an egg-shaped museum floats like a &quot;white cloud,&quot; echoing the distant mountain terrain and establishing a dialogue between architecture and the local natural environment and history.<br><br><span class=\"bold-lg\">Year:</span> 2026<br><span class=\"bold-lg\">Lead Architect:</span> Wu Xu<br><span class=\"bold-lg\">Design Team:</span> Meng Yuxin, Liu Ke, Chen Zongpu"}, {"number": "005", "name": "雄安河谷变电站", "folder": "005-雄安河谷变电站", "info": "**项目简介：**河谷变电站坐落于河北雄安新区雄东片区，是雄安新区目标电网关键节点上的枢纽变电站。本设计荣获2024年第五届**金芦苇工业设计奖 · 绿色设计金奖**，\n设计获奖评价：**“工业与文化交辉、电能与民生互动，缔造跨时代奇迹！”**是自金芦苇奖设立以来首个荣获金奖的变电站作品 。\n**核心理念：「造景」而非「造站」：**\n传统变电站是功能优先的工业建筑，河谷变电站则彻底颠覆这一思路，提出\"用造景的理念设计变电站\"——将能源基础设施转化为城市景观的一部分。\n设计首次将中国传统园林的理念融入现代变电站建筑设计中，打破了人们对变电站的传统印象。\n建筑表皮采用彩色条纹、绿化屋顶。消隐工业痕迹变电站从\"城市伤疤\"变为\"城市花园\"；\n在屋顶花园设置开放公共空间、内庭院、步道向市民开放。周边居民可休憩、锻炼、游览；\n建筑形态与周边住宅、道路协调\t融合城市肌理，成为城市公共空间的有机组成。\n**设计提取了中国传统园林的精髓：**\n曲径通幽：内部庭院步道蜿蜒，营造游园体验\n借景造景：屋顶绿化与周边城市绿化连成一片\n虚实相生：玻璃幕墙与实体墙面交替，光影变化丰富。\n河谷变电站的设计本质上是一场关于\"基础设施如何存在\"的哲学思考——它证明了工业建筑可以兼具功能性与美学性，技术设施可以融入市民生活，能源节点可以转化为城市节点。这既是东方设计智慧的当代演绎，也是未来城市基础设施的发展方向。\n**时间：**2024\n**主创建筑师：**吴旭，孟育新\n**建筑设计：**中国能建天津电力设计院", "images": [{"src": "projects/005-雄安河谷变电站/images/01-金芦苇金奖.jpeg", "name": "金芦苇金奖", "number": "01", "name_en": "Golden Reed Award"}, {"src": "projects/005-雄安河谷变电站/images/02-卫星鸟瞰照片.png", "name": "卫星鸟瞰照片", "number": "02", "name_en": "Satellite Aerial Photo"}, {"src": "projects/005-雄安河谷变电站/images/03-方案鸟瞰图.jpg", "name": "方案鸟瞰图", "number": "03", "name_en": "Aerial Rendering"}, {"src": "projects/005-雄安河谷变电站/images/04-实景照片日景.png", "name": "实景照片日景", "number": "04", "name_en": "Daytime Photo"}, {"src": "projects/005-雄安河谷变电站/images/05-实景照片夜景.jpg", "name": "实景照片夜景", "number": "05", "name_en": "Night Photo"}, {"src": "projects/005-雄安河谷变电站/images/06-实景照片内庭院.jpeg", "name": "实景照片内庭院", "number": "06", "name_en": "Interior Courtyard Photo"}], "videos": [], "coverIndex": 2, "name_en": "Xiong'an River Valley Substation", "info_en": "**Project Overview:** Situated in the Xiong'an New Area, Hebei Province, the River Valley Substation serves as a key hub on the target power grid. This design won the **2024 5th Golden Reed Industrial Design Award · Green Design Gold Prize**.\n\nAward Citation: **\"Where industry and culture converge, where energy and livelihood interact — a cross-era miracle!\"** It is the first substation design in history to win the Gold Prize.\n\n**Core Concept: \"Creating Scenery\" Rather Than \"Building a Station\":**\nTraditional substations are function-first industrial buildings; this design overturns that approach with the philosophy of \"designing a substation as one would design a landscape\" — transforming energy infrastructure into part of the urban landscape.\n\nFor the first time, traditional Chinese garden concepts are integrated into modern substation architecture. The building facade features colorful stripes and a green roof, dissolving industrial traces and transforming the substation from an \"urban scar\" into a \"city garden.\" Open public spaces, interior courtyards, and rooftop walkways are accessible to citizens for rest, exercise, and leisure. The architectural form harmonizes with surrounding residences and roads, blending into the urban fabric as an integral part of public space.\n\n**Essence of Traditional Chinese Gardens:**\nWinding Paths to Seclusion: Meandering courtyard walkways create a garden-like experience.\nBorrowing Scenery: The green roof connects seamlessly with surrounding urban landscaping.\nVirtual and Real Coexistence: Alternating glass curtain walls and solid walls create rich light and shadow play.\n\nThe River Valley Substation is a philosophical reflection on \"how infrastructure should exist\" — proving that industrial buildings can be both functional and aesthetic, that technical facilities can integrate into civic life, and that energy nodes can transform into urban nodes. This is both a contemporary interpretation of Eastern design wisdom and a direction for future urban infrastructure.\n\n**Year:** 2024\n**Lead Architects:** Wu Xu, Meng Yuxin\n**Architectural Design:** China Energy Engineering Group Tianjin Electric Power Design Institute", "images_en": ["Golden Reed Award", "Satellite Aerial Photo", "Aerial Rendering", "Daytime Photo", "Night Photo", "Interior Courtyard Photo"], "videos_en": [], "info_html": "<span class=\"bold-lg\">项目简介：</span>河谷变电站坐落于河北雄安新区雄东片区，是雄安新区目标电网关键节点上的枢纽变电站。本设计荣获2024年第五届<span class=\"bold-lg\">金芦苇工业设计奖 · 绿色设计金奖</span>，<br>设计获奖评价：<span class=\"bold-lg\">“工业与文化交辉、电能与民生互动，缔造跨时代奇迹！”</span>是自金芦苇奖设立以来首个荣获金奖的变电站作品 。<br><span class=\"bold-lg\">核心理念：「造景」而非「造站」：</span><br>传统变电站是功能优先的工业建筑，河谷变电站则彻底颠覆这一思路，提出&quot;用造景的理念设计变电站&quot;——将能源基础设施转化为城市景观的一部分。<br>设计首次将中国传统园林的理念融入现代变电站建筑设计中，打破了人们对变电站的传统印象。<br>建筑表皮采用彩色条纹、绿化屋顶。消隐工业痕迹变电站从&quot;城市伤疤&quot;变为&quot;城市花园&quot;；<br>在屋顶花园设置开放公共空间、内庭院、步道向市民开放。周边居民可休憩、锻炼、游览；<br>建筑形态与周边住宅、道路协调\t融合城市肌理，成为城市公共空间的有机组成。<br><span class=\"bold-lg\">设计提取了中国传统园林的精髓：</span><br>曲径通幽：内部庭院步道蜿蜒，营造游园体验<br>借景造景：屋顶绿化与周边城市绿化连成一片<br>虚实相生：玻璃幕墙与实体墙面交替，光影变化丰富。<br>河谷变电站的设计本质上是一场关于&quot;基础设施如何存在&quot;的哲学思考——它证明了工业建筑可以兼具功能性与美学性，技术设施可以融入市民生活，能源节点可以转化为城市节点。这既是东方设计智慧的当代演绎，也是未来城市基础设施的发展方向。<br><span class=\"bold-lg\">时间：</span>2024<br><span class=\"bold-lg\">主创建筑师：</span>吴旭，孟育新<br><span class=\"bold-lg\">建筑设计：</span>中国能建天津电力设计院", "info_html_en": "<span class=\"bold-lg\">Project Overview:</span> Situated in the Xiong&#x27;an New Area, Hebei Province, the River Valley Substation serves as a key hub on the target power grid. This design won the <span class=\"bold-lg\">2024 5th Golden Reed Industrial Design Award · Green Design Gold Prize</span>.<br><br>Award Citation: <span class=\"bold-lg\">&quot;Where industry and culture converge, where energy and livelihood interact — a cross-era miracle!&quot;</span> It is the first substation design in history to win the Gold Prize.<br><br><span class=\"bold-lg\">Core Concept: &quot;Creating Scenery&quot; Rather Than &quot;Building a Station&quot;:</span><br>Traditional substations are function-first industrial buildings; this design overturns that approach with the philosophy of &quot;designing a substation as one would design a landscape&quot; — transforming energy infrastructure into part of the urban landscape.<br><br>For the first time, traditional Chinese garden concepts are integrated into modern substation architecture. The building facade features colorful stripes and a green roof, dissolving industrial traces and transforming the substation from an &quot;urban scar&quot; into a &quot;city garden.&quot; Open public spaces, interior courtyards, and rooftop walkways are accessible to citizens for rest, exercise, and leisure. The architectural form harmonizes with surrounding residences and roads, blending into the urban fabric as an integral part of public space.<br><br><span class=\"bold-lg\">Essence of Traditional Chinese Gardens:</span><br>Winding Paths to Seclusion: Meandering courtyard walkways create a garden-like experience.<br>Borrowing Scenery: The green roof connects seamlessly with surrounding urban landscaping.<br>Virtual and Real Coexistence: Alternating glass curtain walls and solid walls create rich light and shadow play.<br><br>The River Valley Substation is a philosophical reflection on &quot;how infrastructure should exist&quot; — proving that industrial buildings can be both functional and aesthetic, that technical facilities can integrate into civic life, and that energy nodes can transform into urban nodes. This is both a contemporary interpretation of Eastern design wisdom and a direction for future urban infrastructure.<br><br><span class=\"bold-lg\">Year:</span> 2024<br><span class=\"bold-lg\">Lead Architects:</span> Wu Xu, Meng Yuxin<br><span class=\"bold-lg\">Architectural Design:</span> China Energy Engineering Group Tianjin Electric Power Design Institute"}, {"number": "004", "name": "顺义昆仑物流华北总部改造", "folder": "004-顺义昆仑物流华北总部改造", "info": "**项目简介：**项目位于北京顺义区林泉大街南侧，原为中石油昆仑物流基地，该基地建筑大多建于上世纪70年代后期，均较为破旧。本次设计拟将其改造为昆仑物流华北地区的办公总部，项目预算极为紧张，因此外檐改造以涂料为主。局部格栅遮挡原厂房的折板屋面，形成若隐若显的的效果，隐喻了公司诞生地——魏巍昆仑的意向。体现企业的精神传承。室内设计简洁大气，朴质自然，体现央企气质。设计遵循三维虚拟设计与建造(Virtual Design & Construct)方式。采用Archicad完成全部建筑，室内设计（方案到施工图）。\n**时间：**2025年\n**主创建筑师：**陈宗普", "images": [{"src": "projects/004-顺义昆仑物流华北总部改造/images/01-总平面图.png", "name": "总平面图", "number": "01", "name_en": "Site Plan"}, {"src": "projects/004-顺义昆仑物流华北总部改造/images/02-首层平面图.png", "name": "首层平面图", "number": "02", "name_en": "Ground Floor Plan"}, {"src": "projects/004-顺义昆仑物流华北总部改造/images/03-改造前 南立面.png", "name": "改造前 南立面", "number": "03", "name_en": "South Facade Before"}, {"src": "projects/004-顺义昆仑物流华北总部改造/images/04-改造后 东南立面效果图.png", "name": "改造后 东南立面效果图", "number": "04", "name_en": "Southeast Elevation After (Rendering)"}, {"src": "projects/004-顺义昆仑物流华北总部改造/images/05-改造后 西南立面效果图.png", "name": "改造后 西南立面效果图", "number": "05", "name_en": "Southwest Elevation After (Rendering)"}, {"src": "projects/004-顺义昆仑物流华北总部改造/images/06-改造后 东南立面.png", "name": "改造后 东南立面", "number": "06", "name_en": "Southeast Elevation After"}, {"src": "projects/004-顺义昆仑物流华北总部改造/images/07-改造后 西南立面.png", "name": "改造后 西南立面", "number": "07", "name_en": "Southwest Elevation After"}, {"src": "projects/004-顺义昆仑物流华北总部改造/images/08-大堂.png", "name": "大堂", "number": "08", "name_en": "Lobby"}, {"src": "projects/004-顺义昆仑物流华北总部改造/images/09-接待室.png", "name": "接待室", "number": "09", "name_en": "Reception Room"}, {"src": "projects/004-顺义昆仑物流华北总部改造/images/10-剖透视.png", "name": "剖透视", "number": "10", "name_en": "Sectional Perspective"}], "videos": [], "coverIndex": 5, "name_en": "Shunyi Kunlun Logistics HQ Renovation", "info_en": "**Project Overview:** Located on the south side of Linquan Street in Beijing's Shunyi District, the site was originally a CNPC Kunlun Logistics base, with most buildings dating back to the late 1970s in poor condition. This design proposes transforming it into the North China regional office headquarters for Kunlun Logistics.\n\nGiven an extremely tight budget, the exterior renovation primarily uses paint. Partial grilles screen the original factory's folded-plate roof, creating a subtle, veiled effect that metaphorically evokes the company's birthplace — the majestic Kunlun Mountains — embodying the spirit of corporate heritage. The interior design is clean, grand, and naturally understated, reflecting the character of a central state-owned enterprise.\n\nThe design follows Virtual Design & Construct (VDC) methodology, using Archicad for all architectural and interior design from concept to construction documents.\n\n**Year:** 2025\n**Lead Architect:** Chen Zongpu", "images_en": ["Site Plan", "Ground Floor Plan", "South Facade Before", "Southeast Elevation After (Rendering)", "Southwest Elevation After (Rendering)", "Southeast Elevation After", "Southwest Elevation After", "Lobby", "Reception Room", "Sectional Perspective"], "videos_en": [], "info_html": "<span class=\"bold-lg\">项目简介：</span>项目位于北京顺义区林泉大街南侧，原为中石油昆仑物流基地，该基地建筑大多建于上世纪70年代后期，均较为破旧。本次设计拟将其改造为昆仑物流华北地区的办公总部，项目预算极为紧张，因此外檐改造以涂料为主。局部格栅遮挡原厂房的折板屋面，形成若隐若显的的效果，隐喻了公司诞生地——魏巍昆仑的意向。体现企业的精神传承。室内设计简洁大气，朴质自然，体现央企气质。设计遵循三维虚拟设计与建造(Virtual Design &amp; Construct)方式。采用Archicad完成全部建筑，室内设计（方案到施工图）。<br><span class=\"bold-lg\">时间：</span>2025年<br><span class=\"bold-lg\">主创建筑师：</span>陈宗普", "info_html_en": "<span class=\"bold-lg\">Project Overview:</span> Located on the south side of Linquan Street in Beijing&#x27;s Shunyi District, the site was originally a CNPC Kunlun Logistics base, with most buildings dating back to the late 1970s in poor condition. This design proposes transforming it into the North China regional office headquarters for Kunlun Logistics.<br><br>Given an extremely tight budget, the exterior renovation primarily uses paint. Partial grilles screen the original factory&#x27;s folded-plate roof, creating a subtle, veiled effect that metaphorically evokes the company&#x27;s birthplace — the majestic Kunlun Mountains — embodying the spirit of corporate heritage. The interior design is clean, grand, and naturally understated, reflecting the character of a central state-owned enterprise.<br><br>The design follows Virtual Design &amp; Construct (VDC) methodology, using Archicad for all architectural and interior design from concept to construction documents.<br><br><span class=\"bold-lg\">Year:</span> 2025<br><span class=\"bold-lg\">Lead Architect:</span> Chen Zongpu"}, {"number": "003", "name": "滁州天长厂房室内设计", "folder": "003-滁州天长厂房室内设计", "info": "**项目简介：**本项目位于安徽省滁州市天长市，滁州高新区东片区产业培育中心B5#B6#现状车间。首次改造首层增设员工更衣室，门厅，门厅入口外檐升级改造，二层增设办公区；外檐采用铝板对原来卷帘门上部包裹，下部增加断桥铝门，更适合人的使用尺度。新增的门厅，办公区空间，采用铝方通吊顶，既能满足空间需求，还能保证上部喷淋系统的正常使用，吊顶局部硅酸钙板收边和细节的变化，地面统一采用地流平，经济适用。**本次设计采用Archicad软件平台，三维虚拟建造，实现图纸和模型的完全统一，更精准指导现场施工。**\n**时间：**2026年\n**主创建筑师：**陈宗普", "images": [{"src": "projects/003-滁州天长厂房室内设计/images/01-总平面图.png", "name": "总平面图", "number": "01", "name_en": "Site Plan"}, {"src": "projects/003-滁州天长厂房室内设计/images/02-平面图，吊顶图，立面图.png", "name": "平面图，吊顶图，立面图", "number": "02", "name_en": "Floor Plan, Ceiling Plan & Elevation Drawings"}, {"src": "projects/003-滁州天长厂房室内设计/images/03-入口门厅.png", "name": "入口门厅", "number": "03", "name_en": "Entrance Lobby"}, {"src": "projects/003-滁州天长厂房室内设计/images/04-大堂.png", "name": "大堂", "number": "04", "name_en": "Lobby"}, {"src": "projects/003-滁州天长厂房室内设计/images/05-办公区.png", "name": "办公区", "number": "05", "name_en": "Office Area"}, {"src": "projects/003-滁州天长厂房室内设计/images/06-独立办公室.png", "name": "独立办公室", "number": "06", "name_en": "Private Office"}, {"src": "projects/003-滁州天长厂房室内设计/images/07-会议室.png", "name": "会议室", "number": "07", "name_en": "Meeting Room"}], "videos": [], "coverIndex": 2, "name_en": "Chuzhou Tianchang Factory Interior", "info_en": "**Project Overview:** Located in Tianchang, Chuzhou, Anhui Province, this project involves the B5# and B6# workshops in the East Industrial Cultivation Zone of the Chuzhou High-Tech Zone.\n\nThe first renovation adds staff changing rooms and an entrance lobby on the ground floor, with an upgraded exterior canopy at the lobby entrance; the second floor adds office areas. The exterior uses aluminum panels to wrap the upper portion of the original roller shutter doors, with thermal-break aluminum doors added below for more human-friendly scale.\n\nThe new lobby and office spaces feature aluminum baffle ceilings that meet spatial needs while allowing the overhead sprinkler system to function normally, with calcium silicate board edges and refined details. The flooring uses self-leveling cement throughout — economical and practical.\n\n**This design was executed using the Archicad software platform, with 3D virtual construction ensuring complete consistency between drawings and models, providing more precise guidance for on-site construction.**\n\n**Year:** 2026\n**Lead Architect:** Chen Zongpu", "images_en": ["Site Plan", "Floor Plan, Ceiling Plan & Elevation Drawings", "Entrance Lobby", "Lobby", "Office Area", "Private Office", "Meeting Room"], "videos_en": [], "info_html": "<span class=\"bold-lg\">项目简介：</span>本项目位于安徽省滁州市天长市，滁州高新区东片区产业培育中心B5#B6#现状车间。首次改造首层增设员工更衣室，门厅，门厅入口外檐升级改造，二层增设办公区；外檐采用铝板对原来卷帘门上部包裹，下部增加断桥铝门，更适合人的使用尺度。新增的门厅，办公区空间，采用铝方通吊顶，既能满足空间需求，还能保证上部喷淋系统的正常使用，吊顶局部硅酸钙板收边和细节的变化，地面统一采用地流平，经济适用。<span class=\"bold-lg\">本次设计采用Archicad软件平台，三维虚拟建造，实现图纸和模型的完全统一，更精准指导现场施工。</span><br><span class=\"bold-lg\">时间：</span>2026年<br><span class=\"bold-lg\">主创建筑师：</span>陈宗普", "info_html_en": "<span class=\"bold-lg\">Project Overview:</span> Located in Tianchang, Chuzhou, Anhui Province, this project involves the B5# and B6# workshops in the East Industrial Cultivation Zone of the Chuzhou High-Tech Zone.<br><br>The first renovation adds staff changing rooms and an entrance lobby on the ground floor, with an upgraded exterior canopy at the lobby entrance; the second floor adds office areas. The exterior uses aluminum panels to wrap the upper portion of the original roller shutter doors, with thermal-break aluminum doors added below for more human-friendly scale.<br><br>The new lobby and office spaces feature aluminum baffle ceilings that meet spatial needs while allowing the overhead sprinkler system to function normally, with calcium silicate board edges and refined details. The flooring uses self-leveling cement throughout — economical and practical.<br><br><span class=\"bold-lg\">This design was executed using the Archicad software platform, with 3D virtual construction ensuring complete consistency between drawings and models, providing more precise guidance for on-site construction.</span><br><br><span class=\"bold-lg\">Year:</span> 2026<br><span class=\"bold-lg\">Lead Architect:</span> Chen Zongpu"}, {"number": "002", "name": "潍坊欢乐海游艇码头", "folder": "002-潍坊欢乐海游艇码头", "info": "**项目简介：**潍坊欢乐海国际游艇码头由潍坊滨海旅游集团投资建设，位于莱州湾南岸白浪河入海口东侧，处于潍坊港中港区与欢乐海防护堤之间。项目从立项之初就确立了\"高端国际化\"的定位，不是简单的停泊设施，而是集商业、俱乐部会所、专业游艇服务于一体的综合性旅游目的地。项目计划投资8.9亿元，设计游艇泊位741个（初设335个），是集商业、大众美食、俱乐部会所、专业游艇服务区于一体的国际游艇港。\n**时间：**2017\n**主创建筑师：**刘珂\n**主创团队：**刘松，陈丹丹，董玥", "images": [{"src": "projects/002-潍坊欢乐海游艇码头/images/01-鸟瞰图.jpg", "name": "鸟瞰图", "number": "01", "name_en": "Aerial View"}, {"src": "projects/002-潍坊欢乐海游艇码头/images/02-夜景图.jpg", "name": "夜景图", "number": "02", "name_en": "Night View"}, {"src": "projects/002-潍坊欢乐海游艇码头/images/03-俱乐部会所.jpg", "name": "俱乐部会所", "number": "03", "name_en": "Clubhouse"}, {"src": "projects/002-潍坊欢乐海游艇码头/images/04-商业中心.jpg", "name": "商业中心", "number": "04", "name_en": "Commercial Center"}, {"src": "projects/002-潍坊欢乐海游艇码头/images/05-维修车间级办公.jpg", "name": "维修车间级办公", "number": "05", "name_en": "Maintenance Workshop & Office"}, {"src": "projects/002-潍坊欢乐海游艇码头/images/06-实景1.jpg", "name": "实景1", "number": "06", "name_en": "Actual Photo 1"}, {"src": "projects/002-潍坊欢乐海游艇码头/images/06-实景2.jpg", "name": "实景2", "number": "06", "name_en": "Actual Photo 2"}, {"src": "projects/002-潍坊欢乐海游艇码头/images/07-实景3.jpg", "name": "实景3", "number": "07", "name_en": "Actual Photo 3"}], "videos": [{"src": "projects/002-潍坊欢乐海游艇码头/videos/潍坊欢乐海游艇码头.mp4", "name": "潍坊欢乐海游艇码头.mp4", "name_en": "Weifang Happy Sea Yacht Marina"}], "coverIndex": 0, "name_en": "Weifang Happy Sea Yacht Marina", "info_en": "**Project Overview:** The Weifang Happy Sea International Yacht Marina was invested and constructed by the Weifang Binhai Tourism Group. Located on the east side of the Bailang River estuary on the south shore of Laizhou Bay, between the central port area of Weifang Port and the Happy Sea breakwater.\n\nFrom the project's inception, it was positioned as \"high-end and international\" — not merely a mooring facility, but a comprehensive tourism destination integrating commerce, clubhouse amenities, and professional yacht services.\n\nWith a planned investment of 890 million RMB, the marina features 741 yacht berths (335 in the initial phase), making it an international yacht harbor integrating commerce, casual dining, clubhouse facilities, and professional yacht services.\n\n**Year:** 2017\n**Lead Architect:** Liu Ke\n**Design Team:** Liu Song, Chen Dandan, Dong Yue", "images_en": ["Aerial View", "Night View", "Clubhouse", "Commercial Center", "Maintenance Workshop & Office", "Actual Photo 1", "Actual Photo 2", "Actual Photo 3"], "videos_en": ["Weifang Happy Sea Yacht Marina"], "info_html": "<span class=\"bold-lg\">项目简介：</span>潍坊欢乐海国际游艇码头由潍坊滨海旅游集团投资建设，位于莱州湾南岸白浪河入海口东侧，处于潍坊港中港区与欢乐海防护堤之间。项目从立项之初就确立了&quot;高端国际化&quot;的定位，不是简单的停泊设施，而是集商业、俱乐部会所、专业游艇服务于一体的综合性旅游目的地。项目计划投资8.9亿元，设计游艇泊位741个（初设335个），是集商业、大众美食、俱乐部会所、专业游艇服务区于一体的国际游艇港。<br><span class=\"bold-lg\">时间：</span>2017<br><span class=\"bold-lg\">主创建筑师：</span>刘珂<br><span class=\"bold-lg\">主创团队：</span>刘松，陈丹丹，董玥", "info_html_en": "<span class=\"bold-lg\">Project Overview:</span> The Weifang Happy Sea International Yacht Marina was invested and constructed by the Weifang Binhai Tourism Group. Located on the east side of the Bailang River estuary on the south shore of Laizhou Bay, between the central port area of Weifang Port and the Happy Sea breakwater.<br><br>From the project&#x27;s inception, it was positioned as &quot;high-end and international&quot; — not merely a mooring facility, but a comprehensive tourism destination integrating commerce, clubhouse amenities, and professional yacht services.<br><br>With a planned investment of 890 million RMB, the marina features 741 yacht berths (335 in the initial phase), making it an international yacht harbor integrating commerce, casual dining, clubhouse facilities, and professional yacht services.<br><br><span class=\"bold-lg\">Year:</span> 2017<br><span class=\"bold-lg\">Lead Architect:</span> Liu Ke<br><span class=\"bold-lg\">Design Team:</span> Liu Song, Chen Dandan, Dong Yue"}, {"number": "001", "name": "新天津宾馆万丽酒店", "folder": "001-新天津宾馆万丽酒店", "info": "**项目简介：**万丽天津宾馆坐落于天津市河西区宾水道，作为万豪国际旗下Renaissance品牌在天津的旗舰项目，该酒店通过中庭穹顶、湖景客房与城市天际线的三重对话，完成了商务功能与度假氛围的平衡设计。\n建筑包含酒店品牌Renaissance Tianjin Lakeview Hotel及行政公寓品牌Renaissance Tianjin Lakeview Hotel Executive Apartments，合计500间套，十层高度中庭大堂，以巨型水晶吊灯为视觉焦点，形成纵向空间的仪式感，标志性蓝色玻璃穹顶引入自然天光，形成\"室内天窗\"效应，日夜呈现不同光影层次。\n超过3900平方米的宴会及会议场地，包含1500平方米可拆分无柱式大宴会厅，堪称会议或社交活动的理想之选。健身中心、室内游泳馆及网球场让您尽享休闲时光\n**时间：**2009\n**方案设计负责人：**刘珂\n**主创团队：**张剑坤，石岩，陈文峰", "images": [{"src": "projects/001-新天津宾馆万丽酒店/images/01-首层平面图.jpg", "name": "首层平面图", "number": "01", "name_en": "Ground Floor Plan"}, {"src": "projects/001-新天津宾馆万丽酒店/images/02-沿湖效果图.jpg", "name": "沿湖效果图", "number": "02", "name_en": "Lake View Rendering"}, {"src": "projects/001-新天津宾馆万丽酒店/images/03-沿街效果图.jpg", "name": "沿街效果图", "number": "03", "name_en": "Street View Rendering"}, {"src": "projects/001-新天津宾馆万丽酒店/images/04-入口夜景.png", "name": "入口夜景", "number": "04", "name_en": "Entrance Night View"}, {"src": "projects/001-新天津宾馆万丽酒店/images/05-酒店中庭.png", "name": "酒店中庭", "number": "05", "name_en": "Hotel Atrium"}, {"src": "projects/001-新天津宾馆万丽酒店/images/06-酒店大堂.jpg", "name": "酒店大堂", "number": "06", "name_en": "Hotel Lobby"}, {"src": "projects/001-新天津宾馆万丽酒店/images/07-西餐厅.jpg", "name": "西餐厅", "number": "07", "name_en": "Western Restaurant"}, {"src": "projects/001-新天津宾馆万丽酒店/images/08-中餐厅.jpg", "name": "中餐厅", "number": "08", "name_en": "Chinese Restaurant"}, {"src": "projects/001-新天津宾馆万丽酒店/images/09-自助餐厅.png", "name": "自助餐厅", "number": "09", "name_en": "Buffet Restaurant"}, {"src": "projects/001-新天津宾馆万丽酒店/images/10-大宴会.jpg", "name": "大宴会", "number": "10", "name_en": "Grand Ballroom"}, {"src": "projects/001-新天津宾馆万丽酒店/images/11-泳池实景.png", "name": "泳池实景", "number": "11", "name_en": "Pool Actual Photo"}, {"src": "projects/001-新天津宾馆万丽酒店/images/12-沿湖景观实景.jpg", "name": "沿湖景观实景", "number": "12", "name_en": "Lakeside Landscape Actual Photo"}, {"src": "projects/001-新天津宾馆万丽酒店/images/14-庭院实景.jpg", "name": "庭院实景", "number": "14", "name_en": "Courtyard Actual Photo"}], "videos": [], "coverIndex": 11, "name_en": "Renaissance Tianjin Lakeview Hotel", "info_en": "**Project Overview:** The Renaissance Tianjin Lakeview Hotel is located on Binshui Road in the Hexi District of Tianjin. As the flagship Renaissance property by Marriott International in Tianjin, the hotel achieves a balanced design between business functionality and resort atmosphere through a triple dialogue among the atrium dome, lake-view guestrooms, and the city skyline.\n\nThe building comprises the Renaissance Tianjin Lakeview Hotel and the Renaissance Tianjin Lakeview Hotel Executive Apartments, totaling 500 rooms and suites. The ten-story atrium lobby features a monumental crystal chandelier as the visual focal point, creating a ceremonial sense of vertical space. The iconic blue glass dome introduces natural daylight, forming an \"indoor skylight\" effect that presents different layers of light and shadow by day and night.\n\nOver 3,900 square meters of banquet and conference facilities include a 1,500-square-meter divisible column-free grand ballroom — an ideal venue for meetings and social events. The fitness center, indoor swimming pool, and tennis courts offer ample leisure opportunities.\n\n**Year:** 2009\n**Design Lead:** Liu Ke\n**Design Team:** Zhang Jiankun, Shi Yan, Chen Wenfeng", "images_en": ["Ground Floor Plan", "Lake View Rendering", "Street View Rendering", "Entrance Night View", "Hotel Atrium", "Hotel Lobby", "Western Restaurant", "Chinese Restaurant", "Buffet Restaurant", "Grand Ballroom", "Pool Actual Photo", "Lakeside Landscape Actual Photo", "Courtyard Actual Photo"], "videos_en": [], "info_html": "<span class=\"bold-lg\">项目简介：</span>万丽天津宾馆坐落于天津市河西区宾水道，作为万豪国际旗下Renaissance品牌在天津的旗舰项目，该酒店通过中庭穹顶、湖景客房与城市天际线的三重对话，完成了商务功能与度假氛围的平衡设计。<br>建筑包含酒店品牌Renaissance Tianjin Lakeview Hotel及行政公寓品牌Renaissance Tianjin Lakeview Hotel Executive Apartments，合计500间套，十层高度中庭大堂，以巨型水晶吊灯为视觉焦点，形成纵向空间的仪式感，标志性蓝色玻璃穹顶引入自然天光，形成&quot;室内天窗&quot;效应，日夜呈现不同光影层次。<br>超过3900平方米的宴会及会议场地，包含1500平方米可拆分无柱式大宴会厅，堪称会议或社交活动的理想之选。健身中心、室内游泳馆及网球场让您尽享休闲时光<br><span class=\"bold-lg\">时间：</span>2009<br><span class=\"bold-lg\">方案设计负责人：</span>刘珂<br><span class=\"bold-lg\">主创团队：</span>张剑坤，石岩，陈文峰", "info_html_en": "<span class=\"bold-lg\">Project Overview:</span> The Renaissance Tianjin Lakeview Hotel is located on Binshui Road in the Hexi District of Tianjin. As the flagship Renaissance property by Marriott International in Tianjin, the hotel achieves a balanced design between business functionality and resort atmosphere through a triple dialogue among the atrium dome, lake-view guestrooms, and the city skyline.<br><br>The building comprises the Renaissance Tianjin Lakeview Hotel and the Renaissance Tianjin Lakeview Hotel Executive Apartments, totaling 500 rooms and suites. The ten-story atrium lobby features a monumental crystal chandelier as the visual focal point, creating a ceremonial sense of vertical space. The iconic blue glass dome introduces natural daylight, forming an &quot;indoor skylight&quot; effect that presents different layers of light and shadow by day and night.<br><br>Over 3,900 square meters of banquet and conference facilities include a 1,500-square-meter divisible column-free grand ballroom — an ideal venue for meetings and social events. The fitness center, indoor swimming pool, and tennis courts offer ample leisure opportunities.<br><br><span class=\"bold-lg\">Year:</span> 2009<br><span class=\"bold-lg\">Design Lead:</span> Liu Ke<br><span class=\"bold-lg\">Design Team:</span> Zhang Jiankun, Shi Yan, Chen Wenfeng"}];
+
+const I18N = {
+  zh: { title: '建筑设计作品集', subtitle: 'Architectural Design Portfolio', company: '匡形无界', contact: '联系方式', tel: 'TEL', email: 'E-mail', back: '返回', copyright: '© 匡形无界设计', projectInfo: '项目简介', video: '视频', noImages: '暂无图片', swipeHint: '左右滑动浏览' },
+  en: { title: 'Architectural Portfolio', subtitle: '建筑设计作品集', company: 'Kbit AI · 匡形无界', contact: 'Contact', tel: 'TEL', email: 'E-mail', back: 'Back', copyright: '© Kbit AI Design', projectInfo: 'Project Info', video: 'Video', noImages: 'No Images', swipeHint: 'Swipe to browse' }
+};
+
+let currentLang = 'zh';
+let currentProject = null;
+let currentLightboxIndex = 0;
+let lightboxItems = [];
+let lightboxTouchStartX = 0;
+let lightboxTouchStartY = 0;
+let lightboxSwipeThreshold = 50;
+let isLightboxDragging = false;
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.lang === lang); });
+  document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.dataset.i18n; if (I18N[lang][key]) el.textContent = I18N[lang][key]; });
+  renderProjectList();
+  const detailPage = document.getElementById('page-detail');
+  if (detailPage.classList.contains('active')) {
+    const activeProjectId = detailPage.dataset.projectId;
+    if (activeProjectId !== undefined) renderDetail(parseInt(activeProjectId));
+  }
+}
+function t(key) { return I18N[currentLang][key] || key; }
+
+// ===== RENDER LIST =====
+function renderProjectList() {
+  const list = document.getElementById('project-list');
+  list.innerHTML = '';
+  PROJECTS.forEach((project, index) => {
+    const displayName = currentLang === 'en' ? project.name_en : project.name;
+    const coverIdx = project.coverIndex || 0;
+    const coverImg = project.images && project.images.length > coverIdx ? project.images[coverIdx].src : '';
+    const item = document.createElement('div');
+    item.className = 'project-item';
+    item.onclick = () => openDetail(index);
+    let thumbHtml = '';
+    if (coverImg) {
+      thumbHtml = `<div class="project-thumb"><div class="project-thumb-placeholder"></div><img src="${coverImg}" alt="${displayName}" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded');this.parentElement.classList.add('load-failed')"></div>`;
+    }
+    item.innerHTML = `${thumbHtml}<div class="project-meta"><span class="project-name">${displayName}</span></div><span class="project-arrow">›</span>`;
+    list.appendChild(item);
+  });
+}
+
+// ===== DETAIL PAGE =====
+function openDetail(index) {
+  const project = PROJECTS[index];
+  if (!project) return;
+  currentProject = project;
+  renderDetail(index);
+  const homePage = document.getElementById('page-home');
+  const detailPage = document.getElementById('page-detail');
+  homePage.classList.add('leaving');
+  setTimeout(() => { homePage.classList.remove('active', 'leaving'); detailPage.classList.add('active'); }, 250);
+  detailPage.dataset.projectId = index;
+  document.getElementById('viewport').scrollTo(0, 0);
+}
+
+function renderDetail(index) {
+  const project = PROJECTS[index];
+  const content = document.getElementById('detail-content');
+  const isEn = currentLang === 'en';
+  const title = isEn ? project.name_en : project.name;
+  const infoHtml = isEn ? project.info_html_en : project.info_html;
+  const coverIdx = project.coverIndex || 0;
+
+  let html = '';
+  // Hero image (cover)
+  if (project.images && project.images.length > coverIdx) {
+    const hero = project.images[coverIdx];
+    const heroName = isEn ? (hero.name_en || hero.name) : hero.name;
+    html += `<div class="hero-image" onclick="openLightbox(${coverIdx})"><div class="hero-image-placeholder"></div><img class="hero-image-img" src="${hero.src}" alt="${heroName}" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded');this.parentElement.classList.add('load-failed')"></div>`;
+  }
+  // Title
+  html += `<div class="detail-title-area"><h2 class="title-lg detail-title">${title}</h2></div>`;
+  // Info
+  if (infoHtml) html += `<div class="info-card">${infoHtml}</div>`;
+  // Gallery (all images except cover)
+  if (project.images && project.images.length > 0) {
+    let galleryCount = 0;
+    project.images.forEach((img, i) => {
+      if (i === coverIdx) return;
+      galleryCount++;
+      const imgName = isEn ? (img.name_en || img.name) : img.name;
+      html += `<div class="gallery-item" style="animation-delay: ${galleryCount * 0.05}s" onclick="openLightbox(${i})"><div class="gallery-image-wrapper"><div class="gallery-image-placeholder"></div><img class="gallery-image" src="${img.src}" alt="${imgName}" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded');this.parentElement.classList.add('load-failed')"></div><div class="gallery-caption"><span class="gallery-caption-text">${imgName}</span></div></div>`;
+    });
+  }
+  if (!project.images || project.images.length === 0) {
+    html += `<p class="text-muted" style="text-align:center; padding: 40px 24px;">${t('noImages')}</p>`;
+  }
+  // Videos
+  if (project.videos && project.videos.length > 0) {
+    html += `<div class="video-section"><p class="video-section-label">${t('video')}</p>`;
+    project.videos.forEach((vid, i) => {
+      const vidName = isEn ? (vid.name_en || vid.name) : vid.name;
+      html += `<div class="video-item" onclick="openVideoLightbox(${i})"><div class="video-wrapper"><video controls preload="metadata" playsinline poster="${project.images && project.images.length > coverIdx ? project.images[coverIdx].src : ''}"><source src="${vid.src}" type="video/mp4"></video></div><p class="video-caption">${vidName}</p></div>`;
+    });
+    html += `</div>`;
+  }
+  content.innerHTML = html;
+}
+
+function goBack() {
+  const detailPage = document.getElementById('page-detail');
+  const homePage = document.getElementById('page-home');
+  detailPage.classList.add('leaving');
+  setTimeout(() => { detailPage.classList.remove('active', 'leaving'); homePage.classList.add('active'); document.getElementById('detail-content').innerHTML = ''; currentProject = null; }, 250);
+  document.getElementById('viewport').scrollTo(0, 0);
+}
+
+// ===== LIGHTBOX =====
+function openLightbox(startIndex) {
+  if (!currentProject || !currentProject.images) return;
+  lightboxItems = currentProject.images.map(img => ({ type: 'image', src: img.src, name: currentLang === 'en' ? (img.name_en || img.name) : img.name }));
+  if (currentProject.videos) {
+    currentProject.videos.forEach(vid => {
+      lightboxItems.push({ type: 'video', src: vid.src, name: currentLang === 'en' ? (vid.name_en || vid.name) : vid.name });
+    });
+  }
+  currentLightboxIndex = startIndex;
+  buildLightbox();
+  const lightbox = document.getElementById('lightbox');
+  const viewport = document.getElementById('viewport');
+  lightbox.classList.add('active');
+  viewport.classList.add('hidden');
+  document.body.style.overflow = 'hidden';
+  updateLightboxUI();
+}
+
+function openVideoLightbox(videoIndex) {
+  if (!currentProject) return;
+  const imageCount = currentProject.images ? currentProject.images.length : 0;
+  openLightbox(imageCount + videoIndex);
+}
+
+function buildLightbox() {
+  const track = document.getElementById('lightbox-track');
+  track.innerHTML = '';
+  lightboxItems.forEach((item, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'lightbox-slide';
+    if (item.type === 'image') {
+      slide.innerHTML = `<img src="${item.src}" alt="${item.name}" draggable="false">`;
+    } else {
+      slide.innerHTML = `<video src="${item.src}" controls autoplay playsinline style="max-width:100%;max-height:100%;"></video>`;
+    }
+    track.appendChild(slide);
+  });
+  updateLightboxPosition();
+}
+
+function updateLightboxPosition() {
+  const track = document.getElementById('lightbox-track');
+  track.style.transform = `translateX(-${currentLightboxIndex * 100}vw)`;
+}
+
+function updateLightboxUI() {
+  const counter = document.getElementById('lightbox-counter');
+  const caption = document.getElementById('lightbox-caption');
+  const hint = document.getElementById('swipe-hint');
+  counter.textContent = `${currentLightboxIndex + 1} / ${lightboxItems.length}`;
+  if (lightboxItems[currentLightboxIndex]) caption.textContent = lightboxItems[currentLightboxIndex].name;
+  hint.textContent = t('swipeHint');
+  hint.style.animation = 'none';
+  hint.offsetHeight;
+  hint.style.animation = '';
+}
+
+function lightboxPrev() {
+  if (currentLightboxIndex > 0) { currentLightboxIndex--; updateLightboxPosition(); updateLightboxUI(); }
+}
+function lightboxNext() {
+  if (currentLightboxIndex < lightboxItems.length - 1) { currentLightboxIndex++; updateLightboxPosition(); updateLightboxUI(); }
+}
+
+function closeLightbox() {
+  const lightbox = document.getElementById('lightbox');
+  const viewport = document.getElementById('viewport');
+  lightbox.classList.add('lightbox-closing');
+  setTimeout(() => {
+    lightbox.classList.remove('active', 'lightbox-closing');
+    viewport.classList.remove('hidden');
+    document.body.style.overflow = '';
+    document.querySelectorAll('#lightbox video').forEach(v => { v.pause(); v.src = ''; });
+    lightboxItems = [];
+    currentLightboxIndex = 0;
+  }, 400);
+}
+
+// Lightbox touch events
+const lightboxEl = document.getElementById('lightbox');
+lightboxEl.addEventListener('touchstart', (e) => {
+  if (e.target.tagName === 'VIDEO') return;
+  lightboxTouchStartX = e.touches[0].clientX;
+  lightboxTouchStartY = e.touches[0].clientY;
+  isLightboxDragging = true;
+}, { passive: true });
+
+lightboxEl.addEventListener('touchmove', (e) => {
+  if (!isLightboxDragging || e.target.tagName === 'VIDEO') return;
+  const dx = e.touches[0].clientX - lightboxTouchStartX;
+  const track = document.getElementById('lightbox-track');
+  const baseOffset = -currentLightboxIndex * window.innerWidth;
+  track.style.transition = 'none';
+  track.style.transform = `translateX(${baseOffset + dx}px)`;
+}, { passive: true });
+
+lightboxEl.addEventListener('touchend', (e) => {
+  if (!isLightboxDragging) return;
+  isLightboxDragging = false;
+  const dx = e.changedTouches[0].clientX - lightboxTouchStartX;
+  const dy = e.changedTouches[0].clientY - lightboxTouchStartY;
+  const track = document.getElementById('lightbox-track');
+  track.style.transition = '';
+  if (dy > 80 && Math.abs(dy) > Math.abs(dx) * 1.5) { closeLightbox(); return; }
+  if (Math.abs(dx) > lightboxSwipeThreshold) {
+    if (dx > 0 && currentLightboxIndex > 0) { lightboxPrev(); }
+    else if (dx < 0 && currentLightboxIndex < lightboxItems.length - 1) { lightboxNext(); }
+    else { updateLightboxPosition(); }
+  } else { updateLightboxPosition(); }
+}, { passive: true });
+
+lightboxEl.addEventListener('click', (e) => {
+  if (e.target === lightboxEl || e.target.id === 'lightbox-viewport') closeLightbox();
+});
+
+document.addEventListener('keydown', (e) => {
+  const lightbox = document.getElementById('lightbox');
+  if (!lightbox.classList.contains('active')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') lightboxPrev();
+  if (e.key === 'ArrowRight') lightboxNext();
+});
+
+// Detail page swipe back
+let detailTouchStartX = 0;
+let detailTouchStartY = 0;
+const detailPage = document.getElementById('page-detail');
+detailPage.addEventListener('touchstart', (e) => {
+  detailTouchStartX = e.touches[0].clientX;
+  detailTouchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+detailPage.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].clientX - detailTouchStartX;
+  const dy = e.changedTouches[0].clientY - detailTouchStartY;
+  if (dx > 80 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+    if (e.changedTouches[0].clientX < 60 || detailTouchStartX < 60) goBack();
+  }
+}, { passive: true });
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => { renderProjectList(); });
+window.addEventListener('popstate', () => {
+  const lightbox = document.getElementById('lightbox');
+  if (lightbox.classList.contains('active')) { closeLightbox(); return; }
+  if (document.getElementById('page-detail').classList.contains('active')) goBack();
+});
+</script>
+
+</body>
+</html>
